@@ -1,0 +1,200 @@
+Metadata-Version: 2.4
+Name: contract-intelligence
+Version: 0.1.0
+Summary: DBS Contract Reviewer - Private contract review application
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.110.0
+Requires-Dist: uvicorn[standard]>=0.29.0
+Requires-Dist: pydantic>=2.7.0
+Requires-Dist: pydantic-settings>=2.3.0
+Requires-Dist: python-multipart>=0.0.9
+Requires-Dist: aiofiles>=24.0.0
+Requires-Dist: pdfplumber>=0.11.0
+Requires-Dist: pymupdf>=1.23.0
+Requires-Dist: openpyxl>=3.1.0
+Requires-Dist: pillow>=10.0.0
+Requires-Dist: pytesseract>=0.3.10
+Requires-Dist: python-docx>=1.1.0
+Requires-Dist: reportlab>=4.0.0
+Requires-Dist: psycopg2-binary>=2.9.0
+Requires-Dist: sqlalchemy[asyncio]>=2.0.0
+Requires-Dist: asyncpg>=0.29.0
+Requires-Dist: alembic>=1.13.0
+Requires-Dist: pgvector>=0.2.0
+Requires-Dist: duckdb>=1.0.0
+Requires-Dist: polars>=1.0.0
+Requires-Dist: pyarrow>=15.0.0
+Requires-Dist: openai>=1.30.0
+Requires-Dist: tiktoken>=0.7.0
+Requires-Dist: python-jose[cryptography]>=3.3.0
+Requires-Dist: passlib[bcrypt]>=1.7.4
+Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: structlog>=24.0.0
+Requires-Dist: httpx>=0.27.0
+Requires-Dist: tenacity>=8.2.0
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.23.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: ruff>=0.4.0; extra == "dev"
+Requires-Dist: mypy>=1.9.0; extra == "dev"
+Requires-Dist: pre-commit>=3.7.0; extra == "dev"
+Requires-Dist: types-aiofiles>=24.0.0; extra == "dev"
+
+# DBS Contract Intelligence
+
+Private contract review application for DBS. Upload PDF/XLSX contracts and receive professional review reports with risk analysis, financial exposure calculations, and negotiation recommendations.
+
+## Features (MVP - V0.1)
+
+- PDF/XLSX upload with validation and deduplication
+- Text extraction from PDFs (native + OCR fallback)
+- Table extraction from PDFs and XLSX
+- Clause segmentation and normalization
+- Core commercial fact extraction
+- DBS Playbook comparison (20-30 risk rules)
+- Evidence-linked findings with source references
+- DOCX/PDF report generation
+- XLSX risk register export
+
+## Tech Stack
+
+- **Backend**: Python 3.12, FastAPI, SQLAlchemy, PostgreSQL + pgvector
+- **Document Processing**: pdfplumber, PyMuPDF, openpyxl, pytesseract
+- **Report Generation**: python-docx, reportlab
+- **AI**: OpenAI API (GPT-4o, text-embedding-3-large)
+- **Frontend**: React/Next.js (planned)
+- **Testing**: pytest, ruff, mypy
+
+## Quick Start
+
+### Prerequisites
+
+- Python 3.12+
+- PostgreSQL 15+ with pgvector extension
+- Tesseract OCR (`brew install tesseract` on macOS)
+
+### Installation
+
+```bash
+# Clone and navigate
+cd contract-intelligence
+
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate
+
+# Install dependencies
+pip install -e ".[dev]"
+
+# Copy and configure environment
+cp .env.example .env
+# Edit .env with your settings
+
+# Run database migrations (when implemented)
+# alembic upgrade head
+
+# Start development server
+uvicorn app.main:app --reload
+```
+
+### API Documentation
+
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+
+### API Endpoints
+
+```
+POST   /api/v1/documents/upload     - Upload contract
+GET    /api/v1/documents            - List documents
+GET    /api/v1/documents/{id}       - Get document details
+DELETE /api/v1/documents/{id}       - Delete document
+```
+
+## Project Structure
+
+```
+contract-intelligence/
+├── app/
+│   ├── api/              # API routes
+│   ├── auth/             # Authentication (planned)
+│   ├── ingestion/        # File intake (Sprint 1)
+│   ├── extraction/       # Document extraction (Sprint 2)
+│   ├── normalization/    # Text normalization (Sprint 2)
+│   ├── clauses/          # Clause segmentation (Sprint 2)
+│   ├── facts/            # Fact extraction (Sprint 3)
+│   ├── playbook/         # DBS Playbook (Sprint 4)
+│   ├── risk_engine/      # Risk analysis (Sprint 5)
+│   ├── economics/        # Financial exposure (Sprint 7)
+│   ├── cross_clause/     # Cross-clause analysis (Sprint 6)
+│   ├── retrieval/        # RAG (V0.2)
+│   ├── llm/              # LLM integration
+│   ├── redlining/        # Redline generation (V0.2)
+│   ├── obligations/      # Obligation extraction (V0.2)
+│   ├── reports/          # Report generation (Sprint 8)
+│   └── storage/          # Database models & session
+├── frontend/             # Next.js app (planned)
+├── knowledge/            # Playbook, regulations, templates
+├── tests/                # Test suites
+├── sample_contracts/     # Test documents
+├── output/               # Generated reports
+└── docs/                 # Documentation
+```
+
+## Development
+
+### Code Quality
+
+```bash
+# Lint
+ruff check .
+
+# Format
+ruff format .
+
+# Type check
+mypy .
+
+# Test
+pytest
+
+# Test with coverage
+pytest --cov=app --cov-report=term-missing
+```
+
+### Database Migrations
+
+```bash
+# Create migration
+alembic revision --autogenerate -m "description"
+
+# Apply migrations
+alembic upgrade head
+```
+
+## Sprint Progress
+
+- [x] Sprint 1: File Intake - Upload endpoint, validation, hashing, storage
+- [ ] Sprint 2: Extraction - PDF text/OCR, XLSX, clause segmentation
+- [ ] Sprint 3: Fact Extraction - Commercial terms, dates, rates, KPIs
+- [ ] Sprint 4: DBS Playbook - Schema, rules, severity system
+- [ ] Sprint 5: Risk Engine - Deterministic rules, evidence linking
+- [ ] Sprint 6: AI Reasoning - Clause interpretation, cross-clause
+- [ ] Sprint 7: Financial Engine - Revenue, margin, LD exposure
+- [ ] Sprint 8: Report Generator - DOCX, PDF, XLSX export
+- [ ] Sprint 9: UI - Upload, dashboard, findings, download
+- [ ] Sprint 10: Security - Auth, audit, prompt-injection defense
+
+## Design Principles
+
+1. **Evidence before opinion** - Every finding must have source reference
+2. **Deterministic calculations before LLM arithmetic** - No LLM math
+3. **DBS policy configurable, not in prompts** - Playbook as structured data
+4. **Uploaded documents are untrusted** - Prompt injection defense
+5. **AI drafts; humans approve** - Clear labeling of AI-generated content
+
+## License
+
+Private - DBS Internal Use Only

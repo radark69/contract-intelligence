@@ -1,0 +1,36 @@
+# DBS Contract Playbook — Pricing
+
+rules:
+  - id: PRICING-001
+    category: pricing
+    topic: rate_schedule
+    severity: medium
+    requires_management_approval: false
+    preferred: Day rate, standby rate, and reimbursable schedule defined in the contract
+    acceptable: Rates in an annexed schedule referenced by the agreement
+    escalate: Key rates missing or reserved for later agreement
+    reject: Scope committed without any rate basis
+    clause_categories: [pricing]
+    escalate_patterns:
+      - "rate.{0,50}(?:to be agreed|tba|tbc|later)"
+      - "commercial (?:terms|details) .{0,30}(?:separate|annex|attached)"
+    rationale: >-
+      Undefined rates make LD, revenue and margin exposure impossible to
+      calculate — the financial engine cannot proceed without them.
+
+  - id: PRICING-002
+    category: pricing
+    topic: escalation
+    severity: medium
+    requires_management_approval: false
+    preferred: Annual escalation at or above an agreed index
+    acceptable: Fixed annual escalation percentage
+    escalate: No escalation mechanism on multi-year contracts
+    reject: Multi-year fixed pricing with client-only price adjustment rights
+    clause_categories: [pricing]
+    escalate_patterns:
+      - "fixed (?:price|rate).{0,60}(?:term|years?)"
+      - "no (?:price )?adjust"
+    rationale: >-
+      Multi-year fixed pricing without escalation transfers all inflation and
+      cost-growth risk to DBS.

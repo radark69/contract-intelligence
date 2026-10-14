@@ -1,0 +1,59 @@
+# DBS Contract Playbook — Termination
+
+rules:
+  - id: TERMINATION-001
+    category: termination
+    topic: termination_for_convenience
+    severity: high
+    requires_management_approval: false
+    preferred: Mutual termination for convenience with defined notice and cost settlement
+    acceptable: Client TFC right with full recovery of WIP, demobilisation, and stranded costs
+    escalate: Client TFC right with partial or undefined cost recovery
+    reject: Client TFC right with no cost recovery
+    clause_categories: [termination]
+    escalate_patterns:
+      - "(?:terminat|termination).{0,60}(?:convenience|without cause)"
+      - "at (?:the )?client.{0,30}discretion"
+    reject_patterns:
+      - "terminat.{0,80}(?:without|no) (?:payment|compensation|cost).{0,40}(?:recover|reimburse)"
+    rationale: >-
+      Named cross-clause risk: termination without recovery of mobilisation
+      costs strands committed spend (plan section 10).
+
+  - id: TERMINATION-002
+    category: termination
+    topic: payment_on_termination
+    severity: high
+    requires_management_approval: true
+    preferred: Payment for all WIP, committed costs, demobilisation, and equipment return on any termination
+    acceptable: Payment of WIP plus agreed termination fee
+    escalate: Payment limited to WIP only, excluding demobilisation
+    reject: No payment on client default termination or termination fee is client's sole liability
+    clause_categories: [termination]
+    escalate_patterns:
+      - "work[- ]in[- ]progress"
+      - "demobilis|demobiliz"
+      - "stranded (?:cost|expens)"
+    reject_patterns:
+      - "no (?:further )?payment .{0,40}(?:terminat|expiry)"
+      - "sole (?:remedy|compensation).{0,40}termination fee"
+    rationale: >-
+      Unrecovered demobilisation and WIP on termination is a direct,
+      quantifiable loss requiring management visibility.
+
+  - id: TERMINATION-003
+    category: termination
+    topic: termination_notice
+    severity: medium
+    requires_management_approval: false
+    preferred: ≥ 90 days written notice for convenience termination
+    acceptable: 30–89 days notice
+    escalate: < 30 days notice
+    reject: Immediate termination without cure period for remediable breaches
+    clause_categories: [termination]
+    escalate_patterns:
+      - "(?:terminat|notice).{0,50}(?:\\d{1,2}\\s*days|(?:immediate|instant))"
+      - "without (?:prior )?notice"
+    rationale: >-
+      Short notice periods prevent orderly demobilisation and increase
+      stranded-cost exposure.

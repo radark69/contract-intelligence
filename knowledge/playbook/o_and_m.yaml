@@ -1,0 +1,58 @@
+# DBS Contract Playbook — Operations & Maintenance
+
+rules:
+  - id: AVAILABILITY-001
+    category: availability
+    topic: availability_guarantee
+    severity: critical
+    requires_management_approval: true
+    preferred: Availability target ≤ 95% with defined exclusions (NPT, client delay, FM)
+    acceptable: Target up to 98% with exclusion categories and measurement window
+    escalate: Target above 98% or exclusions not comparable to downtime definition
+    reject: 100% availability guarantee or guarantee without exclusion categories
+    clause_categories: [availability, downtime_npt]
+    escalate_patterns:
+      - "(?:9[9]|100)%\\s*availability"
+      - "availability.{0,60}(?:without|no) .{0,20}(?:exclusion|exception|deduct)"
+    reject_patterns:
+      - "100%\\s*(?:availability|uptime)"
+      - "guarantee.{0,40}(?:all|any) time"
+    rationale: >-
+      Availability guarantees without exclusions convert every client-side or
+      force-majeure hour into breach; thresholds need management sign-off.
+
+  - id: AVAILABILITY-002
+    category: availability
+    topic: downtime_definition
+    severity: high
+    requires_management_approval: false
+    preferred: Downtime/availability definitions align with LD measurement definitions
+    acceptable: Separate definitions with explicit reconciliation method
+    escalate: Conflicting definitions of downtime / availability / NPT across clauses
+    reject: LDs measured by a definition that is not defined anywhere in the contract
+    clause_categories: [downtime_npt, kpi, availability]
+    escalate_patterns:
+      - "npt|non[- ]productive time"
+      - "(?:define|definition).{0,40}(?:downtime|availability|npt)"
+      - "uptime"
+    rationale: >-
+      Named cross-clause risk: conflicting downtime definitions let LDs accrue
+      on hours excluded from the availability guarantee (plan section 10).
+
+  - id: OPERATIONS-003
+    category: operations
+    topic: maintenance_scope
+    severity: medium
+    requires_management_approval: false
+    preferred: Maintenance obligations with defined exclusions (client equipment, FM, existing defects)
+    acceptable: Exclusions referenced via schedule with reasonable notice
+    escalate: Maintenance obligation without defined exclusions
+    reject: DBS liable for latent defects in client-supplied equipment
+    clause_categories: [maintenance, scope]
+    escalate_patterns:
+      - "maintain (?:in )?(?:good )?work(?:ing)? order"
+      - "good (?:working )?(?:order|condition)"
+      - "keep.{0,30}(?:equipment|plant).{0,30}(?:operational|serviceable)"
+    rationale: >-
+      Named cross-clause risk: maintenance obligations without exclusions cover
+      pre-existing and client-caused failures (plan section 10).

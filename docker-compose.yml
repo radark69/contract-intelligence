@@ -1,0 +1,74 @@
+version: "3.9"
+
+services:
+  # ──────────────────────────────────────────────────────────────
+  # PostgreSQL 16 + pgvector
+  # ──────────────────────────────────────────────────────────────
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: contract-intel-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-contract}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-contract}
+      POSTGRES_DB: ${POSTGRES_DB:-contract_intel}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-contract} -d ${POSTGRES_DB:-contract_intel}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ──────────────────────────────────────────────────────────────
+  # Backend: FastAPI (uvicorn)
+  # ──────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: contract-intel-backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-contract}:${POSTGRES_PASSWORD:-contract}@db:5432/${POSTGRES_DB:-contract_intel}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      SECRET_KEY: ${SECRET_KEY:-changeme}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      DEBUG: ${DEBUG:-true}
+      API_PREFIX: /api/v1
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app:cached
+    command: >
+      sh -c "sleep 3 && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  # ──────────────────────────────────────────────────────────────
+  # Frontend: Vite dev server (npm run dev)
+  # ──────────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    container_name: contract-intel-frontend
+    environment:
+      VITE_API_BASE: http://localhost:8000/api/v1
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app:cached
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0 --port 5173
+
+volumes:
+  pgdata:
+
+networks:
+  default:
+    name: contract-intel-net

@@ -1,0 +1,78 @@
+# DBS Contract Playbook — Payment
+
+rules:
+  - id: PAYMENT-001
+    category: payment
+    topic: payment_terms
+    severity: medium
+    requires_management_approval: false
+    preferred: Net 30 days from invoice receipt
+    acceptable: Net 45–60 days
+    escalate: Net 61–90 days
+    reject: Net 91+ days or payment contingent on client's downstream receipts
+    clause_categories: [payment]
+    escalate_patterns:
+      - "(?:net\\s*)?(?:6[1-9]|[789]\\d)\\s*days"
+      - "\\d{3}\\s*days .{0,30}(?:invoice|payment)"
+      - "paid .{0,40}when .{0,30}(?:received|collected)"
+    reject_patterns:
+      - "(?:net\\s*)?9[1-9]\\s*days"
+      - "(?:net\\s*)?1\\d{2}\\s*days"
+      - "pay(?:ment)? .{0,40}contingent"
+    rationale: >-
+      Payment beyond 60 days materially increases working-capital cost;
+      pay-when-paid terms transfer client credit risk to DBS.
+
+  - id: PAYMENT-002
+    category: payment
+    topic: deemed_approval
+    severity: high
+    requires_management_approval: false
+    preferred: Invoices deemed approved if not rejected within 10 business days
+    acceptable: Deemed approval within 15 business days
+    escalate: Client approval required with no deemed-approval deadline
+    reject: Indefinite client approval right over issued invoices
+    clause_categories: [payment]
+    escalate_patterns:
+      - "subject to .{0,30}approv.{0,40}invoice"
+      - "invoice.{0,60}(?:prior )?approv"
+    reject_patterns:
+      - "(?:invoice|payment).{0,60}(?:without|no) .{0,20}deadline"
+    rationale: >-
+      Named cross-clause risk: approval without a deemed-approval deadline lets
+      payment stall indefinitely while work continues (plan section 10).
+
+  - id: PAYMENT-003
+    category: payment
+    topic: set_off_deduction
+    severity: medium
+    requires_management_approval: false
+    preferred: No unilateral set-off; deductions only by agreement or award
+    acceptable: Set-off limited to liquidated, undisputed amounts with notice
+    escalate: Broad set-off right with no notice or dispute safeguards
+    reject: Unlimited unilateral deduction or set-off against invoices
+    clause_categories: [payment]
+    escalate_patterns:
+      - "set[- ]?off"
+      - "deduct .{0,40}(?:any|all) (?:amount|invoice)"
+      - "withhold payment .{0,40}(?:dispute|claim)"
+    rationale: >-
+      Unrestricted set-off converts disputed claims into self-help cash
+      extraction and undermines the agreed payment terms.
+
+  - id: PAYMENT-004
+    category: payment
+    topic: retention
+    severity: medium
+    requires_management_approval: false
+    preferred: Retention ≤ 5%, released at defined milestones or completion
+    acceptable: Retention up to 10% with release deadline
+    escalate: Retention > 10% or release tied to undefined conditions
+    reject: Open-ended retention with no release date
+    clause_categories: [payment]
+    escalate_patterns:
+      - "reten(?:tion|tions).{0,40}(?:1\\d|[2-9]\\d)%"
+      - "reten(?:tion|tions).{0,60}(?:final acceptance|defects liability)"
+    rationale: >-
+      Retention above 10% or with no release deadline is effectively
+      unreturned working capital.

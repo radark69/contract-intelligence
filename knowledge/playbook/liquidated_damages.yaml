@@ -1,0 +1,57 @@
+# DBS Contract Playbook — Liquidated Damages
+
+rules:
+  - id: LIQUIDATED_DAMAGES-001
+    category: liquidated_damages
+    topic: ld_rate_defined
+    severity: high
+    requires_management_approval: false
+    preferred: LD rate stated per day/unit with an aggregate cap
+    acceptable: LD rate stated with cap at defined % of contract value
+    escalate: LD rate present but no aggregate cap
+    reject: Open-ended LD accrual with no cap or maximum
+    clause_categories: [liquidated_damages]
+    escalate_patterns:
+      - "per (?:day|hour|week).{0,80}(?:delay|downtime|breach)"
+      - "liquidated damage.{0,80}without (?:cap|limit)"
+    reject_patterns:
+      - "(?:LDs?|liquidated damages).{0,60}(?:no|without) (?:cap|limit|maximum)"
+      - "accru(?:e|ed|ing) (?:daily|per day).{0,60}(?:indefinite|until)"
+    rationale: >-
+      Uncapped daily LD accrual can exceed contract value; a cap is the
+      required structure even when the rate itself is accepted.
+
+  - id: LIQUIDATED_DAMAGES-002
+    category: liquidated_damages
+    topic: ld_threshold
+    severity: high
+    requires_management_approval: true
+    preferred: Aggregate LD exposure ≤ 10% of contract value
+    acceptable: Aggregate LD exposure up to 15% of contract value
+    escalate: Aggregate LD exposure 15–25% of contract value
+    reject: Aggregate LD exposure above 25% of contract value
+    clause_categories: [liquidated_damages]
+    escalate_patterns:
+      - "\\d{1,3}% .{0,40}(?:contract value|total (?:price|fee|value))"
+      - "aggregate .{0,40}liquidated"
+    rationale: >-
+      LD exposure above 25% of contract value materially changes deal risk
+      and requires management approval regardless of other positions.
+
+  - id: LIQUIDATED_DAMAGES-003
+    category: liquidated_damages
+    topic: exclusive_remedy
+    severity: medium
+    requires_management_approval: false
+    preferred: LDs are sole and exclusive remedy for the qualifying breach
+    acceptable: Exclusive remedy with carve-outs for defined willful misconduct
+    escalate: LDs non-exclusive; client may also claim damages
+    reject: LDs payable alongside unliquidated damages for the same delay
+    clause_categories: [liquidated_damages, liability]
+    escalate_patterns:
+      - "in addition to (?:any|all|other)"
+      - "without prejudice to .{0,40}(?:claim|damages|right)"
+      - "not (?:the )?(?:sole|exclusive) remedy"
+    rationale: >-
+      Non-exclusive LDs mean the same breach is compensated twice — once as LD
+      and again as damages.

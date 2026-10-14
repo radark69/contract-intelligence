@@ -1,0 +1,20 @@
+# DBS Contract Playbook — HSE
+
+rules:
+  - id: HSE-002
+    category: hse
+    topic: stop_work_cost_protection
+    severity: high
+    requires_management_approval: false
+    preferred: Client stop-work with standby/day-rate payment for affected resources
+    acceptable: Stop-work with payment for a defined stand-down period
+    escalate: Stop-work allowed with no stated cost consequence
+    reject: Indefinite client stop-work with no payment obligation
+    clause_categories: [hse, suspension]
+    escalate_patterns:
+      - "stop[- ]work"
+      - "suspend .{0,40}(?:work|operations) .{0,40}(?:safety|hse|environment)"
+      - "cease (?:all )?(?:work|operations)"
+    rationale: >-
+      Unpaid stop-work converts client-directed idle time into pure DBS cost;
+      standby economics must be protected.

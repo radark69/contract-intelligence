@@ -1,0 +1,102 @@
+# DBS Contract Playbook — Liability & Indemnity
+# Thresholds are defaults pending DBS legal/commercial sign-off.
+
+rules:
+  - id: LIABILITY-001
+    category: liability
+    topic: liability_cap
+    severity: critical
+    requires_management_approval: true
+    preferred: Defined monetary cap tied to contract value or a negotiated amount
+    acceptable: Negotiated cap with clearly defined exclusions
+    escalate: Cap materially above approved threshold or ambiguous cap language
+    reject: Uncapped liability except explicitly approved carve-outs
+    clause_categories: [liability]
+    reject_patterns:
+      - "uncapped"
+      - "unlimited liability"
+      - "without limitation as to (?:amount|liability)"
+      - "liability (?:shall )?(?:not be|is not) limited"
+    escalate_patterns:
+      - "cap(?:ped)? .{0,40}(?:exceed|above|greater)"
+      - "in excess of .{0,30}cap"
+    rationale: >-
+      Uncapped exposure transfers unlimited financial risk to DBS. A cap is
+      required on all contracts; uncapped positions require management approval.
+
+  - id: LIABILITY-002
+    category: liability
+    topic: consequential_loss
+    severity: high
+    requires_management_approval: false
+    preferred: Mutual exclusion of indirect and consequential damages
+    acceptable: Mutual exclusion with carve-outs limited to payment obligations
+    escalate: One-sided exclusion or carve-outs broader than payment obligations
+    reject: DBS bears consequential loss exposure while client does not
+    clause_categories: [liability]
+    reject_patterns:
+      - "contractor .{0,60}consequential"
+      - "indirect or consequential loss .{0,80}(?:contractor|service provider)"
+    escalate_patterns:
+      - "consequential"
+      - "indirect (?:loss|damages)"
+    rationale: >-
+      One-sided consequential loss exposure can exceed the contract value many
+      times over; mutuality is the required baseline.
+
+  - id: LIABILITY-003
+    category: liability
+    topic: indemnity_scope
+    severity: high
+    requires_management_approval: false
+    preferred: Mutual indemnities limited to each party's negligence and obligations
+    acceptable: Client-favouring indemnities limited to defined, controllable risks
+    escalate: One-way indemnity covering risks outside DBS's control
+    reject: Indemnity for client negligence or client-supplied equipment failures
+    clause_categories: [indemnity]
+    reject_patterns:
+      - "indemnif\\w+ .{0,60}client.{0,20}negligen"
+      - "any and all losses .{0,60}(?:however arising)"
+    escalate_patterns:
+      - "indemnit"
+      - "hold harmless"
+    rationale: >-
+      Indemnities covering client negligence or uncontrolled risks effectively
+      defeat the liability cap.
+
+  - id: LIABILITY-004
+    category: liability
+    topic: cap_threshold
+    severity: high
+    requires_management_approval: true
+    preferred: Cap at or below 100% of contract value
+    acceptable: Cap up to 150% of contract value for defined high-risk scopes
+    escalate: Cap above 150% of contract value
+    reject: Cap exceeding 200% of contract value without board approval
+    clause_categories: [liability]
+    escalate_patterns:
+      - "cap(?:ped)? .{0,60}(?:times|multiple|x) .{0,20}(?:contract|value|fee)"
+      - "\\d{2,3}% .{0,40}(?:aggregate )?contract value"
+    rationale: >-
+      Exposure above contract value changes the risk profile of the deal and
+      requires management approval regardless of other positions.
+
+  - id: LIABILITY-005
+    category: liability
+    topic: liability_ld_stacking
+    severity: high
+    requires_management_approval: true
+    preferred: LDs are the exclusive remedy for delay/performance claims, inside the cap
+    acceptable: LDs inside the cap with carve-outs for defined willful misconduct only
+    escalate: LDs stack with uncapped or separately capped liability
+    reject: LDs payable in addition to uncapped liability for the same breach
+    clause_categories: [liability, liquidated_damages]
+    escalate_patterns:
+      - "in addition to (?:any )?(?:other|all) (?:remed|liab)"
+      - "without limitation .{0,40}remedy"
+    reject_patterns:
+      - "in addition to .{0,60}uncapped"
+      - "uncapped .{0,60}(?:in addition|as well)"
+    rationale: >-
+      Stacking LDs on top of uncapped liability for the same event creates
+      duplicate exposure — a named cross-clause risk (plan section 10).

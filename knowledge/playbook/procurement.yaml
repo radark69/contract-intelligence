@@ -1,0 +1,20 @@
+# DBS Contract Playbook — Procurement
+
+rules:
+  - id: PROCUREMENT-001
+    category: procurement
+    topic: client_mandated_suppliers
+    severity: medium
+    requires_management_approval: false
+    preferred: DBS procures freely against specification
+    acceptable: Client-approved vendor list with price protection
+    escalate: Client mandates suppliers where pricing is not guaranteed
+    reject: Client-mandated suppliers with price at supplier's discretion
+    clause_categories: [procurement]
+    escalate_patterns:
+      - "approved (?:vendor|supplier) (?:list|lender)"
+      - "(?:sole|sole-source|sole source) (?:supplier|vendor)"
+      - "suppliers? (?:nominated|designated) by (?:the )?client"
+    rationale: >-
+      Mandated suppliers remove competitive tension and transfer price risk
+      on fixed-price scopes.

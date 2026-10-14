@@ -1,0 +1,19 @@
+# DBS Contract Playbook — Personnel
+
+rules:
+  - id: PERSONNEL-001
+    category: personnel
+    topic: personnel_approval
+    severity: medium
+    requires_management_approval: false
+    preferred: Client consultation on key personnel; DBS retains appointment authority
+    acceptable: Client approval right limited to named key personnel, with reasonableness
+    escalate: Client approval right over all personnel or unreasonableness not constrained
+    reject: Client unilateral right to remove DBS personnel without cause
+    clause_categories: [personnel]
+    escalate_patterns:
+      - "prior (?:written )?approv.{0,50}(?:personnel|staff|person)"
+      - "satisfact(?:ion|ory) (?:to the client).{0,40}(?:personnel|staff)"
+    rationale: >-
+      Unconstrained client control over DBS staffing disrupts resourcing and
+      can be used to block performance.

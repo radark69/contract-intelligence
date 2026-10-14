@@ -1,0 +1,20 @@
+# DBS Contract Playbook — Taxes
+
+rules:
+  - id: TAXES-001
+    category: taxes
+    topic: withholding_tax
+    severity: medium
+    requires_management_approval: false
+    preferred: Withholding tax limited to statutory rates with tax credit mechanism
+    acceptable: Agreed WHT rate with receipts/credits passed through
+    escalate: WHT above statutory rate or non-creditable WHT
+    reject: Client retains WHT with no credit or gross-up mechanism
+    clause_categories: [taxes]
+    escalate_patterns:
+      - "withhold.{0,30}(?:1[1-9]|2\\d|[3-9]\\d)%"
+      - "not (?:creditable|recoverable)"
+    rationale: >-
+      Non-creditable withholding tax is a permanent cost leakage directly
+      reducing contract margin.
+

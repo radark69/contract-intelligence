@@ -1,0 +1,38 @@
+# DBS Contract Playbook — Commercial
+
+rules:
+  - id: COMMERCIAL-002
+    category: commercial
+    topic: currency_fx
+    severity: high
+    requires_management_approval: false
+    preferred: Single contract currency with defined FX adjustment mechanism
+    acceptable: FX risk limited to defined adjustment windows
+    escalate: Client-controlled currency conversion or multi-currency payment rights
+    reject: Unilateral client right to pay in a devalued currency
+    clause_categories: [currency_fx]
+    escalate_patterns:
+      - "currency.{0,60}(?:conver|conver|exchange rate)"
+      - "equivalent (?:amount )?in (?:any )?(?:other )?currenc"
+      - "at the (?:bank|client) .{0,20}(?:rate|discretion)"
+    rationale: >-
+      Uncontrolled FX translation risk directly erodes margin and can be larger
+      than the contract's contribution.
+
+  - id: COMMERCIAL-003
+    category: commercial
+    topic: unilateral_change
+    severity: high
+    requires_management_approval: false
+    preferred: Changes only via written variation with agreed price and schedule impact
+    acceptable: Client-directed changes with mandatory price/schedule adjustment
+    escalate: Client may change scope without corresponding price adjustment
+    reject: Unilateral client change right with no adjustment mechanism
+    clause_categories: [change_control]
+    escalate_patterns:
+      - "sole discretion.{0,60}(?:scope|change|vary)"
+      - "(?:change|vary).{0,60}(?:without|no) .{0,30}(?:adjust|cost|price)"
+      - "at no (?:additional )?cost"
+    rationale: >-
+      Unpriced scope changes convert a fixed-price contract into open-ended
+      exposure while obligations remain fixed.

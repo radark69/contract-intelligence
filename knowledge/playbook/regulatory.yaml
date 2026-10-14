@@ -1,0 +1,55 @@
+# DBS Contract Playbook — Regulatory & Nigerian Content
+
+rules:
+  - id: REGULATORY-001
+    category: regulatory
+    topic: nigerian_content
+    severity: high
+    requires_management_approval: false
+    preferred: NC obligations scoped to registerable commitments with defined scope
+    acceptable: NC percentages tied to NCDMB scopes with evidence mechanism
+    escalate: Broad NC warranty with no scope definition or evidence basis
+    reject: NC compliance warranted regardless of feasibility or register status
+    clause_categories: [regulatory]
+    escalate_patterns:
+      - "nigerian content"
+      - "ncdmb|nuprc|nogic"
+      - "local content"
+    rationale: >-
+      Nigerian Content obligations carry regulatory and penalty exposure;
+      unscoped warranties can be breached by factors outside DBS's control.
+
+  - id: REGULATORY-002
+    category: regulatory
+    topic: change_in_law
+    severity: high
+    requires_management_approval: false
+    preferred: Change-in-law with automatic price/schedule adjustment
+    acceptable: Adjustment mechanism with defined notice and evidence
+    escalate: Change-in-law risk accepted with no adjustment mechanism
+    reject: DBS bears all new regulatory costs for the full term
+    clause_categories: [regulatory]
+    escalate_patterns:
+      - "change (?:in|of) law"
+      - "new (?:law|regulation|legislation).{0,50}(?:comply|compliance)"
+      - "statutory (?:change|requirement)"
+    rationale: >-
+      Multi-year contracts face regulatory change; absorbing all such cost
+      without adjustment erodes or eliminates margin.
+
+  - id: REGULATORY-003
+    category: regulatory
+    topic: compliance_warranty
+    severity: medium
+    requires_management_approval: false
+    preferred: Compliance warranted against laws applicable to DBS's scope
+    acceptable: Compliance with laws applicable to performance of the scope
+    escalate: Warranty of compliance with ALL applicable laws including client-side
+    reject: Compliance warranty covering client's own regulatory obligations
+    clause_categories: [regulatory]
+    escalate_patterns:
+      - "comply with all (?:applicable )?(?:laws|regulations|requirements)"
+      - "in all (?:material )?respects.{0,40}(?:law|regulation|statut)"
+    rationale: >-
+      Blanket compliance warranties can extend to client-side regulatory
+      obligations outside DBS's control.

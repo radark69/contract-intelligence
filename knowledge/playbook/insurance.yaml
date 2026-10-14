@@ -1,0 +1,20 @@
+# DBS Contract Playbook — Insurance
+
+rules:
+  - id: INSURANCE-001
+    category: insurance
+    topic: insurance_limits
+    severity: high
+    requires_management_approval: false
+    preferred: Limits at or below standard DBS programme coverage
+    acceptable: Limits achievable within existing programme with broker confirmation
+    escalate: Limits above standard programme coverage
+    reject: Required limits unachievable or contract mandates non-standard covers
+    clause_categories: [insurance]
+    escalate_patterns:
+      - "\\$?\\d+(?:\\.\\d+)?\\s*(?:m|million).{0,30}(?:each claim|aggregate|limit)"
+      - "minimum (?:level of )?(?:insurance|cover).{0,40}\\d"
+    rationale: >-
+      Insurance limits that cannot be placed create direct gap exposure; any
+      limit above the standard programme needs broker verification.
+
